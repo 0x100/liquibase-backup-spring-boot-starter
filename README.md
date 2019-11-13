@@ -2,7 +2,7 @@
 
 In theory supports all databases which supported by the Liquibase library: PostgreSQL, Oracle, Microsoft SQL Server, MySQL, H2, Apache Derby, HSQLDB (HyperSQL), DB2, Firebird, MariaDB, Sybase, SQLite.
 
-# Steps to start using the Backuper starter
+# Steps to start using the starter
 
 1. Run `mvn install` command in the root of this project (for install a dependency in the local Maven repository). 
 
@@ -16,7 +16,7 @@ In theory supports all databases which supported by the Liquibase library: Postg
 </dependency>
 ```
 
-3. Configure the Backuper . Sample config:
+3. Add a config in your application.yaml (or application.properties) file. Sample YAML-config:
 ```yaml
 backup:
   enabled: true
