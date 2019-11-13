@@ -26,3 +26,5 @@ backup:
     - comments
   schedule: '0 0 3 ? * *'
 ```
+
+`tables` property is optional. If not set all tables will backed up.
