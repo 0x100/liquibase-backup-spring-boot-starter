@@ -28,3 +28,6 @@ backup:
 ```
 
 `tables` property is optional. If not set all tables will backed up.
+
+4. The result of these steps will be XML files with "inserts" into a changeset (sample file name: backup_20191113_022820.xml).
+Soon there are plans to send the backups by mail.
