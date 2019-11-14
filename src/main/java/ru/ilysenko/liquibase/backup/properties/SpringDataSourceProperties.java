@@ -1,4 +1,4 @@
-package ru.ilysenko.liquibasebackuper;
+package ru.ilysenko.liquibase.backup.properties;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

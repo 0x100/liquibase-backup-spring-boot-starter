@@ -1,4 +1,4 @@
-package ru.ilysenko.liquibasebackuper;
+package ru.ilysenko.liquibase.backup.enums;
 
 public enum SnapshotType {
     ;

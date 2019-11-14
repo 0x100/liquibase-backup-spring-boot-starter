@@ -1,4 +1,4 @@
-package ru.ilysenko.liquibasebackuper;
+package ru.ilysenko.liquibase.backup.component;
 
 import liquibase.database.Database;
 import liquibase.database.DatabaseConnection;
@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
+import ru.ilysenko.liquibase.backup.enums.BackupFormat;
+import ru.ilysenko.liquibase.backup.enums.SnapshotType;
+import ru.ilysenko.liquibase.backup.properties.LiquibaseBackupProperties;
 
 import java.sql.Connection;
 import java.text.MessageFormat;
@@ -19,27 +22,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static java.time.format.DateTimeFormatter.ofPattern;
-
 @Slf4j
 @RequiredArgsConstructor
-public class Backuper {
-    private static final String AUTHOR = "auto-backuper";
-    private static final String CHANGELOG_FILE_NAME_TEMPLATE = "backup_{0}.xml";
-    private static final DateTimeFormatter DATE_TIME_FORMATTER = ofPattern("yyyyMMdd_HHmmss");
+public class LiquibaseBackuper {
+    private static final String AUTHOR = "liquibase-backuper";
+    private static final String CHANGELOG_FILE_NAME_TEMPLATE = "backup_%s.%s%s";
+    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
 
-    private final LiquibaseBackuperDataSource dataSource;
-    private final LiquibaseBackuperProperties properties;
+    private final LiquibaseBackupDataSource dataSource;
+    private final LiquibaseBackupProperties properties;
 
     @Scheduled(cron = "${backup.schedule}")
-    public void init() {
-        log.info("Backing up...");
+    public void backup() {
+        log.info("Backing up data...");
         try (Connection connection = dataSource.getConnection()) {
-            generateChangeLog(getChangeLogFileName(), getDatabase(connection), SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
+            Database database = getDatabase(connection);
+            generateChangeLog(getChangeLogFileName(database), database, SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
         } catch (Exception e) {
             throw new RuntimeException("Error backing up data", e);
         }
-        log.info("Backing up completed");
+        log.info("Backup completed");
     }
 
     @SneakyThrows
@@ -47,8 +49,12 @@ public class Backuper {
         CommandLineUtils.doGenerateChangeLog(fileName, database, null, null, snapshotTypes, author, null, null, diffOutputControl);
     }
 
-    private String getChangeLogFileName() {
-        return MessageFormat.format(CHANGELOG_FILE_NAME_TEMPLATE, LocalDateTime.now().format(DATE_TIME_FORMATTER));
+    private String getChangeLogFileName(Database database) {
+        String fileId = LocalDateTime.now().format(DATE_TIME_FORMATTER);
+        BackupFormat format = properties.getFormat();
+        String extension = format.name().toLowerCase();
+        String databaseType = format == BackupFormat.SQL ? String.format("%s.", database.getShortName()) : "";
+        return String.format(CHANGELOG_FILE_NAME_TEMPLATE, fileId, databaseType, extension);
     }
 
     @SneakyThrows
@@ -68,7 +74,7 @@ public class Backuper {
 
     private void setTablesFilter(DiffOutputControl diffOutputControl, List<String> tables) {
         String tableNamesPattern = tables.stream()
-                .map(t -> MessageFormat.format("(?i){0}", t))
+                .map(t -> MessageFormat.format("table:(?i){0}", t))
                 .collect(Collectors.joining(","));
         StandardObjectChangeFilter filter = new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, tableNamesPattern);
         diffOutputControl.setObjectChangeFilter(filter);

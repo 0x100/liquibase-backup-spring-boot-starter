@@ -1,18 +1,17 @@
-package ru.ilysenko.liquibasebackuper;
+package ru.ilysenko.liquibase.backup.component;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import ru.ilysenko.liquibase.backup.properties.SpringDataSourceProperties;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-@Component
 @RequiredArgsConstructor
-public class LiquibaseBackuperDataSource {
+public class LiquibaseBackupDataSource {
     private final SpringDataSourceProperties properties;
     private DataSource ds;
 

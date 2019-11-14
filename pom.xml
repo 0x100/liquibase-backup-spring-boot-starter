@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>ru.ilysenko</groupId>
-    <artifactId>liquibase-backuper-spring-boot-starter</artifactId>
+    <artifactId>liquibase-backup-spring-boot-starter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>liquibase-backuper</name>
-    <description>Spring Boot starter for backing up data in runtime with the Liquibase (generating changesets with "inserts") from a DB specified as a datasource in the application</description>
+    <name>liquibase-backup</name>
+    <description>Spring Boot starter for backing up data in runtime with the Liquibase (generating changesets with "inserts") from the application's datasource</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

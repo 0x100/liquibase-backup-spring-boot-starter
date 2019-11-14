@@ -1,6 +1,6 @@
 # About
 
-In theory supports all databases which supported by the Liquibase library: PostgreSQL, Oracle, Microsoft SQL Server, MySQL, H2, Apache Derby, HSQLDB (HyperSQL), DB2, Firebird, MariaDB, Sybase, SQLite.
+In theory this solution supports all databases which supported by the Liquibase library: `PostgreSQL, Oracle, Microsoft SQL Server, MySQL, H2, Apache Derby, HSQLDB (HyperSQL), DB2, Firebird, MariaDB, Sybase, SQLite`.
 
 # Steps to start using the starter
 
@@ -8,26 +8,29 @@ In theory supports all databases which supported by the Liquibase library: Postg
 
 2. Add the dependency in your POM:
 
-```xml
-<dependency>
-    <groupId>ru.ilysenko</groupId>
-    <artifactId>liquibase-backuper-spring-boot-starter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-</dependency>
-```
+    ```xml
+    <dependency>
+        <groupId>ru.ilysenko</groupId>
+        <artifactId>liquibase-backuper-spring-boot-starter</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+    ```
 
 3. Add a config in your application.yaml (or application.properties) file. Sample YAML-config:
-```yaml
-backup:
-  enabled: true
-  tables:
-    - users
-    - tasks
-    - comments
-  schedule: '0 0 3 ? * *'
-```
+    ```yaml
+    backup:
+      enabled: true
+      format: sql # or `xml`
+      tables: # optional
+        - users
+        - tasks
+        - comments
+      schedule: '0 0 3 ? * *' #cron schedule expression
+    ```
+    The `format` property is optional, can take `sql` or `xml` values, default format is `sql`.
+    The `tables` property is optional. If not set all tables will backed up.
 
-`tables` property is optional. If not set all tables will backed up.
+4. Depending on the specified format in the `backup.format` property the result of these steps will be *.xml or *.sql 
+files with "inserts". 
 
-4. The result of these steps will be XML files with "inserts" into a changeset (sample file name: backup_20191113_022820.xml).
-Soon there are plans to send the backups by mail.
+    Later there are plans to send the backups by mail.

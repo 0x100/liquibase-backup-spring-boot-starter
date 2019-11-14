@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  ru.ilysenko.liquibasebackuper.LiquibaseBackuperAutoConfiguration
+  ru.ilysenko.liquibase.backup.configuration.LiquibaseBackupAutoConfiguration
