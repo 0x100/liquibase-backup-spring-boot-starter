@@ -11,7 +11,7 @@ In theory this solution supports all databases which supported by the Liquibase 
     ```xml
     <dependency>
         <groupId>ru.ilysenko</groupId>
-        <artifactId>liquibase-backuper-spring-boot-starter</artifactId>
+        <artifactId>liquibase-backup-spring-boot-starter</artifactId>
         <version>0.0.1-SNAPSHOT</version>
     </dependency>
     ```
