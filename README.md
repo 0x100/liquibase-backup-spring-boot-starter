@@ -20,9 +20,9 @@ In theory this solution supports all databases which supported by the Liquibase 
     ```yaml
     spring:
         mail:
-            host: smtp.gmail.com
+            host: smtp.your-email-service.com
             port: 587
-            username: your-gmail-sender-user
+            username: sender-user_or_email
             password: password
          
     backup:
