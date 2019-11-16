@@ -11,7 +11,6 @@ import liquibase.integration.commandline.CommandLineUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import ru.ilysenko.liquibase.backup.component.mail.EmailClient;
 import ru.ilysenko.liquibase.backup.enums.BackupFormat;
@@ -51,8 +50,7 @@ public class LiquibaseBackuper {
     }
 
     @SneakyThrows
-    @Async
-    void doBackup(Connection connection, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
+    private void doBackup(Connection connection, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
         String fileName = generateChangeLog(connection, snapshotTypes, author, diffOutputControl);
         emailClient.sendFile(fileName);
         if(properties.isDeleteFileAfterSend()) {

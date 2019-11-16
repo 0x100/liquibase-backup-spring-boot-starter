@@ -6,7 +6,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import ru.ilysenko.liquibase.backup.component.LiquibaseBackupDataSource;
 import ru.ilysenko.liquibase.backup.component.LiquibaseBackuper;
@@ -15,7 +14,6 @@ import ru.ilysenko.liquibase.backup.properties.LiquibaseBackupProperties;
 import ru.ilysenko.liquibase.backup.properties.SpringDataSourceProperties;
 
 @Configuration
-@EnableAsync
 @EnableScheduling
 @ComponentScan("org.springframework.boot.autoconfigure.mail")
 @ConditionalOnProperty(value = "backup.enabled", havingValue = "true")
