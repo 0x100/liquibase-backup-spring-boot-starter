@@ -6,6 +6,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.diff.output.DiffOutputControl;
 import liquibase.diff.output.StandardObjectChangeFilter;
+import liquibase.exception.LiquibaseException;
 import liquibase.integration.commandline.CommandLineUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -17,7 +18,9 @@ import ru.ilysenko.liquibase.backup.enums.BackupFormat;
 import ru.ilysenko.liquibase.backup.enums.SnapshotType;
 import ru.ilysenko.liquibase.backup.properties.LiquibaseBackupProperties;
 
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -40,9 +43,7 @@ public class LiquibaseBackuper {
     public void backup() {
         log.info("Backing up data...");
         try (Connection connection = dataSource.getConnection()) {
-            Database database = getDatabase(connection);
-            String fileName = makeChangeLogFileName(database);
-            doBackup(fileName, database, SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
+            doBackup(connection, SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
         } catch (Exception e) {
             throw new RuntimeException("Error backing up data", e);
         }
@@ -51,12 +52,19 @@ public class LiquibaseBackuper {
 
     @SneakyThrows
     @Async
-    void doBackup(String fileName, Database database, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
-        CommandLineUtils.doGenerateChangeLog(fileName, database, null, null, snapshotTypes, author, null, null, diffOutputControl);
+    void doBackup(Connection connection, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
+        String fileName = generateChangeLog(connection, snapshotTypes, author, diffOutputControl);
         emailClient.sendFile(fileName);
         if(properties.isDeleteFileAfterSend()) {
             deleteFile(fileName);
         }
+    }
+
+    private String generateChangeLog(Connection connection, String snapshotTypes, String author, DiffOutputControl diffOutputControl) throws IOException, ParserConfigurationException, LiquibaseException {
+        Database database = getDatabase(connection);
+        String fileName = makeChangeLogFileName(database);
+        CommandLineUtils.doGenerateChangeLog(fileName, database, null, null, snapshotTypes, author, null, null, diffOutputControl);
+        return fileName;
     }
 
     @SneakyThrows
