@@ -10,10 +10,12 @@ import java.util.List;
 @ConfigurationProperties(prefix = "backup")
 public
 class LiquibaseBackupProperties {
-    private Boolean enabled;
+    private boolean enabled;
     private BackupFormat format = BackupFormat.SQL;
     private List<String> tables;
     private String schedule;
+    private String receiverEmail;
+    private boolean deleteFileAfterSend = true;
 
     public void setFormat(String format) {
         this.format = BackupFormat.valueOf(format.toUpperCase());

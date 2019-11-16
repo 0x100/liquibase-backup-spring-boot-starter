@@ -10,11 +10,14 @@ import liquibase.integration.commandline.CommandLineUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
+import ru.ilysenko.liquibase.backup.component.mail.EmailClient;
 import ru.ilysenko.liquibase.backup.enums.BackupFormat;
 import ru.ilysenko.liquibase.backup.enums.SnapshotType;
 import ru.ilysenko.liquibase.backup.properties.LiquibaseBackupProperties;
 
+import java.io.File;
 import java.sql.Connection;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -31,13 +34,15 @@ public class LiquibaseBackuper {
 
     private final LiquibaseBackupDataSource dataSource;
     private final LiquibaseBackupProperties properties;
+    private final EmailClient emailClient;
 
     @Scheduled(cron = "${backup.schedule}")
     public void backup() {
         log.info("Backing up data...");
         try (Connection connection = dataSource.getConnection()) {
             Database database = getDatabase(connection);
-            generateChangeLog(getChangeLogFileName(database), database, SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
+            String fileName = makeChangeLogFileName(database);
+            doBackup(fileName, database, SnapshotType.DATA, AUTHOR, makeDiffOutputControl());
         } catch (Exception e) {
             throw new RuntimeException("Error backing up data", e);
         }
@@ -45,22 +50,27 @@ public class LiquibaseBackuper {
     }
 
     @SneakyThrows
-    private void generateChangeLog(String fileName, Database database, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
+    @Async
+    void doBackup(String fileName, Database database, String snapshotTypes, String author, DiffOutputControl diffOutputControl) {
         CommandLineUtils.doGenerateChangeLog(fileName, database, null, null, snapshotTypes, author, null, null, diffOutputControl);
-    }
-
-    private String getChangeLogFileName(Database database) {
-        String fileId = LocalDateTime.now().format(DATE_TIME_FORMATTER);
-        BackupFormat format = properties.getFormat();
-        String extension = format.name().toLowerCase();
-        String databaseType = format == BackupFormat.SQL ? String.format("%s.", database.getShortName()) : "";
-        return String.format(CHANGELOG_FILE_NAME_TEMPLATE, fileId, databaseType, extension);
+        emailClient.sendFile(fileName);
+        if(properties.isDeleteFileAfterSend()) {
+            deleteFile(fileName);
+        }
     }
 
     @SneakyThrows
     private Database getDatabase(Connection connection) {
         DatabaseConnection databaseConnection = new JdbcConnection(connection);
         return DatabaseFactory.getInstance().findCorrectDatabaseImplementation(databaseConnection);
+    }
+
+    private String makeChangeLogFileName(Database database) {
+        String fileId = LocalDateTime.now().format(DATE_TIME_FORMATTER);
+        BackupFormat format = properties.getFormat();
+        String extension = format.name().toLowerCase();
+        String databaseType = format == BackupFormat.SQL ? String.format("%s.", database.getShortName()) : "";
+        return String.format(CHANGELOG_FILE_NAME_TEMPLATE, fileId, databaseType, extension);
     }
 
     private DiffOutputControl makeDiffOutputControl() {
@@ -78,5 +88,14 @@ public class LiquibaseBackuper {
                 .collect(Collectors.joining(","));
         StandardObjectChangeFilter filter = new StandardObjectChangeFilter(StandardObjectChangeFilter.FilterType.INCLUDE, tableNamesPattern);
         diffOutputControl.setObjectChangeFilter(filter);
+    }
+
+    private void deleteFile(String fileName) {
+        File file = new File(fileName);
+        if(file.delete()) {
+            log.info("File {} deleted", fileName);
+        } else {
+            log.info("File {} NOT deleted", fileName);
+        }
     }
 }

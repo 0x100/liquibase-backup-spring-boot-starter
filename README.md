@@ -16,8 +16,15 @@ In theory this solution supports all databases which supported by the Liquibase 
     </dependency>
     ```
 
-3. Add a config in your application.yaml (or application.properties) file. Sample YAML-config:
+3. Configure SMTP and backup params in your application.yaml (or application.properties) file. Sample YAML-config:
     ```yaml
+    spring:
+        mail:
+            host: smtp.gmail.com
+            port: 587
+            username: your-gmail-sender-user
+            password: password
+         
     backup:
       enabled: true
       format: sql # or `xml`
@@ -26,12 +33,11 @@ In theory this solution supports all databases which supported by the Liquibase 
         - tasks
         - comments
       schedule: '0 0 3 ? * *' #cron schedule expression
+      receiverEmail: backup-receiver-user-email
+      deleteFileAfterSend: true # optional
     ```
     The `format` property is optional, can take `sql` or `xml` values. Default format is `sql`.
     
     The `tables` property is optional. If not set all tables will backed up.
-
-4. Depending on the specified format in the `backup.format` property the result of these steps will be *.xml or *.sql 
-files with "inserts". 
-
-    Later there are plans to send the backups by mail.
+    
+    The `deleteFileAfterSend` property is optional. Default value is `true`.
