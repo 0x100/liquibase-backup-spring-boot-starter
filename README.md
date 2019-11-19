@@ -58,10 +58,8 @@ In theory this solution supports all databases supported by the Liquibase librar
         # or `xml`
         backup.format=sql
 
-        # `tables` property is optional
-        backup.tables[0]=users
-        backup.tables[1]=tasks
-        backup.tables[2]=comments
+        # optional property
+        backup.tables=users,tasks,comments
 
          #cron schedule expression
         backup.schedule='0 0 3 ? * *'
