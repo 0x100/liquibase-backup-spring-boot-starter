@@ -69,10 +69,12 @@ In theory this solution supports all databases supported by the Liquibase librar
         backup.deleteFileAfterSend=true
         ```
         
-    The `format` property is optional, can take `sql` or `xml` values. Default format is `sql`.
+    The `format` property is optional, can take `sql` or `xml` values.
+    Default format is `sql`.
     
-    The `tables` property is optional. If not set all tables will backed up.
+    The `tables` property is optional. If is not set all tables will backed up.
     
-    The `deleteFileAfterSend` property is optional. Default value is `true`.
+    The `deleteFileAfterSend` property is optional, determines whether will a generated changeset file deleted or not. 
+    Default value is `true`.
  
- 4. Check your email at the scheduled time!
+ 4. Check your email at the scheduled time and find there the backup file.
