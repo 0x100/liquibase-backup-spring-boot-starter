@@ -30,9 +30,9 @@ In theory this solution supports all databases supported by the Liquibase librar
         ```yaml
         spring:
             mail:
-                host: smtp.your-email-service.com
+                host: smtp.gmail.com
                 port: 587
-                username: sender-user_or_email
+                username: sender@gmail.com
                 password: password
              
         backup:
@@ -43,14 +43,14 @@ In theory this solution supports all databases supported by the Liquibase librar
             - tasks
             - comments
           schedule: '0 0 3 ? * *' #cron schedule expression
-          receiverEmail: backup-receiver-user-email
+          receiverEmail: receiver@your-domain.com
           deleteFileAfterSend: true # optional property
         ```
     - sample properties-config:
         ```properties
-        spring.mail.host=smtp.your-email-service.com
+        spring.mail.host=smtp.gmail.com
         spring.mail.port=587
-        spring.mail.username=sender-user_or_email
+        spring.mail.username=sender@gmail.com
         spring.mail.password=password
              
         backup.enabled=true
@@ -61,9 +61,9 @@ In theory this solution supports all databases supported by the Liquibase librar
         # optional property
         backup.tables=users,tasks,comments
 
-         #cron schedule expression
+        #cron schedule expression
         backup.schedule='0 0 3 ? * *'
-        backup.receiverEmail=backup-receiver-user-email
+        backup.receiverEmail=receiver@your-domain.com
 
         # optional property
         backup.deleteFileAfterSend=true
