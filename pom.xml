@@ -10,7 +10,7 @@
     </parent>
     <groupId>ru.ilysenko</groupId>
     <artifactId>liquibase-backup-spring-boot-starter</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>0.1-SNAPSHOT</version>
     <name>liquibase-backup</name>
     <description>Spring Boot starter for backing up data in runtime with the Liquibase (generating changesets with "inserts") from the application's datasource</description>
 
