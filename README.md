@@ -25,7 +25,7 @@ In theory this solution supports all databases supported by the Liquibase librar
     </repositories>
     ```
 
-- Add the `n-loops` dependency
+- Add the dependency
 
     ```xml
     <dependency>
