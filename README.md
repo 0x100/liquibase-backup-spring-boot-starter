@@ -10,7 +10,7 @@ In theory this solution supports all databases supported by the Liquibase librar
 
 ## How to add it in your project
 
-## 1. Add a dependency
+### 1. Add a dependency
 
 #### Maven
 
